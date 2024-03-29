@@ -7,19 +7,31 @@ const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-// Create multiple moving and rotating cubes
-const cubes = [];
-const numCubes = 720;
-for (let i = 0; i < numCubes; i++) {
-    const geometry = new THREE.BoxGeometry();
-    const material = new THREE.MeshPhongMaterial({ color: Math.random() * 0xffffff }); // Random color for each cube
-    const cube = new THREE.Mesh(geometry, material);
-    cube.position.set(Math.random() * 100 - 50, Math.random() * 100 - 50, Math.random() * 100 - 50); // Randomize cube positions
-    cube.rotation.set(Math.random() * Math.PI * 2, Math.random() * Math.PI * 2, Math.random() * Math.PI * 2); // Randomize initial rotation
-    cube.rotationSpeed = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).multiplyScalar(0.2); // Random rotation speed
-    cube.moveSpeed = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).multiplyScalar(0.1); // Random movement speed
-    scene.add(cube);
-    cubes.push(cube);
+// Create multiple random geometric shapes
+const shapes = [];
+const numShapes = 100;
+for (let i = 0; i < numShapes; i++) {
+    let shape;
+    const randomGeometry = Math.floor(Math.random() * 3); // Random number to determine geometry type
+
+    switch (randomGeometry) {
+        case 0:
+            shape = new THREE.SphereGeometry(Math.random() * 3, 16, 16); // Random radius for spheres
+            break;
+        case 1:
+            shape = new THREE.ConeGeometry(Math.random() * 3, Math.random() * 5, 16); // Random radius and height for cones
+            break;
+        case 2:
+            shape = new THREE.CylinderGeometry(Math.random() * 2, Math.random() * 2, Math.random() * 5, 16); // Random radii and height for cylinders
+            break;
+    }
+
+    const material = new THREE.MeshPhongMaterial({ color:  0xffffff }); // Random color for each shape
+    const mesh = new THREE.Mesh(shape, material);
+    mesh.position.set(Math.random() * 100 - 50, Math.random() * 100 - 50, Math.random() * 100 - 50); // Randomize positions
+    mesh.velocity = new THREE.Vector3((Math.random() - 0.5) * 0.3, (Math.random() - 0.5) * 0.1, (Math.random() - 0.5) * 0.1); // Random velocity
+    scene.add(mesh);
+    shapes.push(mesh);
 }
 
 // Add ambient light to the scene
@@ -33,43 +45,24 @@ scene.add(directionalLight);
 
 camera.position.z = 50;
 
-// Function to handle mouse movement
-function onMouseMove(event) {
-    // Calculate mouse position in normalized device coordinates (-1 to +1) for both components
-    const mouseX = (event.clientX / window.innerWidth) * 2 - 1;
-    const mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
-
-    // Smooth camera rotation based on mouse position
-    const targetRotationY = mouseX * Math.PI * 0.5;
-    const targetRotationX = mouseY * Math.PI * 0.5;
-    camera.rotation.y += (targetRotationY - camera.rotation.y) * 0.05;
-    camera.rotation.x += (targetRotationX - camera.rotation.x) * 0.05;
-}
-
-// Event listener for mouse movement
-document.addEventListener('mousemove', onMouseMove, false);
-
 // Function for animation
 function animate() {
     requestAnimationFrame(animate);
 
-    // Move and rotate each cube
-    cubes.forEach(cube => {
-        cube.rotation.x += cube.rotationSpeed.x;
-        cube.rotation.y += cube.rotationSpeed.y;
-        cube.rotation.z += cube.rotationSpeed.z;
+    // Move and rotate each shape
+    shapes.forEach(shape => {
+        shape.rotation.x += 0.01;
+        shape.rotation.y += 0.01;
 
-        cube.position.x += cube.moveSpeed.x;
-        cube.position.y += cube.moveSpeed.y;
-        cube.position.z += cube.moveSpeed.z;
+        shape.position.add(shape.velocity);
 
-        // Wrap cube around when it goes out of view
-        if (cube.position.x > 50) cube.position.x = -50;
-        if (cube.position.x < -50) cube.position.x = 50;
-        if (cube.position.y > 50) cube.position.y = -50;
-        if (cube.position.y < -50) cube.position.y = 50;
-        if (cube.position.z > 50) cube.position.z = -50;
-        if (cube.position.z < -50) cube.position.z = 50;
+        // Wrap shape around when it goes out of view
+        if (shape.position.x > 50) shape.position.x = -50;
+        if (shape.position.x < -50) shape.position.x = 50;
+        if (shape.position.y > 50) shape.position.y = -50;
+        if (shape.position.y < -50) shape.position.y = 50;
+        if (shape.position.z > 50) shape.position.z = -50;
+        if (shape.position.z < -50) shape.position.z = 50;
     });
 
     renderer.render(scene, camera);
