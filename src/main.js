@@ -26,7 +26,7 @@ for (let i = 0; i < numShapes; i++) {
             break;
     }
 
-    const material = new THREE.MeshPhongMaterial({ color:  0xffffff }); // Random color for each shape
+    const material = new THREE.MeshPhongMaterial({ color: Math.random() * 0xffffff }); // Random color for each shape
     const mesh = new THREE.Mesh(shape, material);
     mesh.position.set(Math.random() * 100 - 50, Math.random() * 100 - 50, Math.random() * 100 - 50); // Randomize positions
     mesh.velocity = new THREE.Vector3((Math.random() - 0.5) * 0.3, (Math.random() - 0.5) * 0.1, (Math.random() - 0.5) * 0.1); // Random velocity
