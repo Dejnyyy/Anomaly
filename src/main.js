@@ -7,7 +7,7 @@ const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-// Create multiple rotating cubes
+// Create multiple moving and rotating cubes
 const cubes = [];
 const numCubes = 720;
 for (let i = 0; i < numCubes; i++) {
@@ -17,6 +17,7 @@ for (let i = 0; i < numCubes; i++) {
     cube.position.set(Math.random() * 100 - 50, Math.random() * 100 - 50, Math.random() * 100 - 50); // Randomize cube positions
     cube.rotation.set(Math.random() * Math.PI * 2, Math.random() * Math.PI * 2, Math.random() * Math.PI * 2); // Randomize initial rotation
     cube.rotationSpeed = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).multiplyScalar(0.2); // Random rotation speed
+    cube.moveSpeed = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).multiplyScalar(0.1); // Random movement speed
     scene.add(cube);
     cubes.push(cube);
 }
@@ -30,17 +31,19 @@ const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
 directionalLight.position.set(1, 1, 1); // Set light position
 scene.add(directionalLight);
 
-camera.position.z = 10;
+camera.position.z = 50;
 
 // Function to handle mouse movement
 function onMouseMove(event) {
     // Calculate mouse position in normalized device coordinates (-1 to +1) for both components
-    const mouseX = -(event.clientX / window.innerWidth) * 2 - 1;
-    const mouseY = -(event.clientY / window.innerHeight) * 2 -  1;
+    const mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+    const mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
 
-    // Set camera rotation based on mouse position
-    camera.rotation.y = mouseX * Math.PI;
-    camera.rotation.x = mouseY * Math.PI;
+    // Smooth camera rotation based on mouse position
+    const targetRotationY = mouseX * Math.PI * 0.5;
+    const targetRotationX = mouseY * Math.PI * 0.5;
+    camera.rotation.y += (targetRotationY - camera.rotation.y) * 0.05;
+    camera.rotation.x += (targetRotationX - camera.rotation.x) * 0.05;
 }
 
 // Event listener for mouse movement
@@ -50,10 +53,23 @@ document.addEventListener('mousemove', onMouseMove, false);
 function animate() {
     requestAnimationFrame(animate);
 
-    // Rotate each cube
+    // Move and rotate each cube
     cubes.forEach(cube => {
-        cube.rotation.x += 0.01;
-        cube.rotation.y += 0.01;
+        cube.rotation.x += cube.rotationSpeed.x;
+        cube.rotation.y += cube.rotationSpeed.y;
+        cube.rotation.z += cube.rotationSpeed.z;
+
+        cube.position.x += cube.moveSpeed.x;
+        cube.position.y += cube.moveSpeed.y;
+        cube.position.z += cube.moveSpeed.z;
+
+        // Wrap cube around when it goes out of view
+        if (cube.position.x > 50) cube.position.x = -50;
+        if (cube.position.x < -50) cube.position.x = 50;
+        if (cube.position.y > 50) cube.position.y = -50;
+        if (cube.position.y < -50) cube.position.y = 50;
+        if (cube.position.z > 50) cube.position.z = -50;
+        if (cube.position.z < -50) cube.position.z = 50;
     });
 
     renderer.render(scene, camera);
