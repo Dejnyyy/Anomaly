@@ -9,7 +9,7 @@ document.body.appendChild(renderer.domElement);
 
 // Create multiple random geometric shapes
 const shapes = [];
-const numShapes = 100;
+const numShapes = 360;
 for (let i = 0; i < numShapes; i++) {
     let shape;
     const randomGeometry = Math.floor(Math.random() * 3); // Random number to determine geometry type
