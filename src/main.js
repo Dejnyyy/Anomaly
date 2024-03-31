@@ -103,17 +103,20 @@ document.addEventListener('keyup', (event) => {
 function moveCamera() {
     const moveSpeed = 0.5;
 
+    const frontVector = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
+    const rightVector = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
+
     if (cameraControls.moveForward) {
-        camera.position.z -= moveSpeed;
+        camera.position.add(frontVector.multiplyScalar(moveSpeed));
     }
     if (cameraControls.moveBackward) {
-        camera.position.z += moveSpeed;
+        camera.position.add(frontVector.multiplyScalar(-moveSpeed));
     }
     if (cameraControls.moveLeft) {
-        camera.position.x -= moveSpeed;
+        camera.position.add(rightVector.multiplyScalar(-moveSpeed));
     }
     if (cameraControls.moveRight) {
-        camera.position.x += moveSpeed;
+        camera.position.add(rightVector.multiplyScalar(moveSpeed));
     }
 }
 
@@ -140,6 +143,39 @@ function animate() {
     moveCamera(); // Move the camera based on user input
     renderer.render(scene, camera);
 }
+
+// Set up camera rotation controls
+const cameraRotation = {
+    mouseX: 0,
+    mouseY: 0,
+    prevMouseX: 0,
+    prevMouseY: 0,
+    mouseDown: false,
+};
+
+document.addEventListener('mousemove', (event) => {
+    if (cameraRotation.mouseDown) {
+        const movementX = event.clientX - cameraRotation.prevMouseX;
+        const movementY = event.clientY - cameraRotation.prevMouseY;
+
+        cameraRotation.mouseX -= movementX * 0.002;
+        cameraRotation.mouseY -= movementY * 0.002;
+
+        camera.rotation.x = cameraRotation.mouseY;
+        camera.rotation.y = cameraRotation.mouseX;
+    }
+
+    cameraRotation.prevMouseX = event.clientX;
+    cameraRotation.prevMouseY = event.clientY;
+});
+
+document.addEventListener('mousedown', () => {
+    cameraRotation.mouseDown = true;
+});
+
+document.addEventListener('mouseup', () => {
+    cameraRotation.mouseDown = false;
+});
 
 // Start animation
 animate();
