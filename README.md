@@ -2,7 +2,13 @@
 This is my first threejs project
 
 ## How to run?
-clone it
+```bash
 npm i
+```
+```bash
 cd src
+```
+```bash
 npx vite
+```
+- made by Dejny
