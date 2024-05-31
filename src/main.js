@@ -38,15 +38,18 @@ for (let i = 0; i < numShapes; i++) {
     shapes.push(mesh);
 }
 
-
 // Add ambient light to the scene
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // Soft white light
 scene.add(ambientLight);
 
 // Add directional light to the scene
-const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
-directionalLight.position.set(1, 1, 1); // Set light position
-scene.add(directionalLight);
+const directionalLight1 = new THREE.DirectionalLight(0xffffff, 0.5);
+directionalLight1.position.set(1, 1, 1); // Set light position
+scene.add(directionalLight1);
+
+const directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.5);
+directionalLight2.position.set(-1, -1, -1); // Set another light position for better lighting
+scene.add(directionalLight2);
 
 camera.position.z = 50;
 // Set up camera controls
