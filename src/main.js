@@ -180,5 +180,35 @@ document.addEventListener('mouseup', () => {
     cameraRotation.mouseDown = false;
 });
 
+// Function to create and shoot a laser
+function shootLaser() {
+    const laserGeometry = new THREE.CylinderGeometry(0.1, 0.1, 2, 8);
+    const laserMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+    const laser = new THREE.Mesh(laserGeometry, laserMaterial);
+
+    // Position the laser at the camera position
+    laser.position.copy(camera.position);
+    laser.rotation.copy(camera.rotation);
+
+    // Move the laser forward along the camera's local z-axis
+    const laserDirection = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
+    laser.velocity = laserDirection.clone().multiplyScalar(5);
+
+    // Adjust laser orientation to shoot horizontally like a bullet
+    laser.rotation.x = Math.PI / 2;
+
+    scene.add(laser);
+
+    // Remove the laser after 3 seconds
+    setTimeout(() => {
+        scene.remove(laser);
+    }, 10000);
+
+    shapes.push(laser);
+}
+
+// Event listener for mouse clicks to shoot lasers
+document.addEventListener('click', shootLaser);
+
 // Start animation
 animate();
